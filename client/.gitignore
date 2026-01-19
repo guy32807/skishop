@@ -10,7 +10,9 @@
 /node_modules
 npm-debug.log
 yarn-error.log
-
+/ssl
+ssl/localhost-key.pem
+ssl/localhost.pem
 # IDEs and editors
 .idea/
 .project
