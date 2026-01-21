@@ -6,27 +6,16 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Product } from './shared/models/product';
 import { Pagination } from './shared/models/pagination';
+import { ShopService } from './core/services/shop.service';
+import { ShopComponent } from "./features/shop/shop.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent],
+  imports: [RouterOutlet, HeaderComponent, ShopComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements OnInit {
-  baseUrl = 'https://localhost:5001/api/';
-  private http = inject(HttpClient);
-  protected readonly title = signal('Ski Shop');
-   products = signal<Product[]>([]); 
-
-  ngOnInit(): void {
-    this.http.get<Pagination<Product>>(this.baseUrl + 'products').subscribe({
-      next: response => {
-        this.products.set(response.data || response); 
-      },
-      error: error => console.log(error),
-      complete: () => console.log('complete')
-    })
-  }
+export class AppComponent {
+  title = signal("Ski Shop")
 }

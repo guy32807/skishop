@@ -1,0 +1,85 @@
+<div class="flex flex-col gap-6 p-4">
+  <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+    <mat-form-field appearance="outline" class="grow">
+      <mat-label>Search products...</mat-label>
+      <input
+        matInput
+        [formField]="searchForm.query"
+        class="block w-full p-4 text-sm text-gray-900 border border-green-300 rounded-lg"
+        placeholder="Search by name"
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <div class="flex items-center gap-4 w-full md:w-auto">
+      <button
+        mat-flat-button
+        color="primary"
+        class="custom-height-button"
+        [matMenuTriggerFor]="sortMenu"
+      >
+        <mat-icon>swap_vert</mat-icon>
+        Sort
+      </button>
+
+      <mat-menu #sortMenu="matMenu">
+        <button mat-menu-item (click)="sort.set('name')">
+          <mat-icon [class.text-primary]="sort() === 'name'">
+            {{ sort() === 'name' ? 'check_circle' : 'circle' }}
+          </mat-icon>
+          <span>Alphabetical</span>
+        </button>
+        <button mat-menu-item (click)="sort.set('priceAsc')">
+          <mat-icon [class.text-primary]="sort() === 'priceAsc'">
+            {{ sort() === 'priceAsc' ? 'check_circle' : 'circle' }}
+          </mat-icon>
+          <span>Price: Low to High</span>
+        </button>
+        <button mat-menu-item (click)="sort.set('priceDesc')">
+          <mat-icon [class.text-primary]="sort() === 'priceDesc'">
+            {{ sort() === 'priceDesc' ? 'check_circle' : 'circle' }}
+          </mat-icon>
+          <span>Price: High to Low</span>
+        </button>
+      </mat-menu>
+
+      <button mat-flat-button color="primary" class="h-[54px] px-6" (click)="openFiltersDialog()">
+        <mat-icon>filter_list</mat-icon>
+        Filters
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+    @if (productsResource.isLoading()) {
+      <div class="col-span-full flex flex-col items-center justify-center py-20 gap-4">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p class="text-gray-500 animate-pulse">Refreshing products...</p>
+      </div>
+    } @else {
+      @for (product of productsResource.value().data; track product.id) {
+        <app-product-item [product]="product"></app-product-item>
+      } @empty {
+        <div class="col-span-full text-center py-20">
+          <mat-icon class="text-6xl text-gray-300 mb-2">inventory_2</mat-icon>
+          <p class="text-xl text-gray-500">No products match your criteria.</p>
+        </div>
+      }
+    }
+  </div>
+  @if (productsResource.value().count > 0) {
+    <div class="flex justify-center mt-10 pagination-container">
+      <mat-paginator
+        [length]="productsResource.value().count"
+        [pageSize]="shopService.pageSize()"
+        [pageIndex]="shopService.pageIndex() - 1"
+        [pageSizeOptions]="[5, 10, 15, 20]"
+        (page)="handlePageEvent($event)"
+        class="custom-paginator"
+        aria-label="Select page"
+      >
+        [showFirstLastButtons]="true"
+      </mat-paginator>
+    </div>
+  }
+</div>

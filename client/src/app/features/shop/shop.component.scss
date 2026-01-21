@@ -1,0 +1,41 @@
+.filter-bar {
+  --common-height: 54px; 
+
+  .custom-height-button {
+    height: var(--common-height);
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+    border-radius: 8px; /* Slightly more modern look for 2026 */
+  }
+}
+
+.pagination-container {
+  /* Match the background and border-radius of your filter buttons */
+  .custom-paginator {
+    background-color: transparent; /* Or a light gray to distinguish the bar */
+    border: 1px solid #e2e8f0; /* Tailwind border-gray-200 */
+    border-radius: 8px;
+    padding: 4px 16px;
+    
+    /* Ensure the color of icons/text matches your Primary theme */
+    ::ng-deep {
+      .mat-mdc-paginator-container {
+        justify-content: center;
+        min-height: 54px; /* Matches your --common-height */
+      }
+      
+      .mat-mdc-button {
+        color: var(--mat-sys-primary); /* Uses Angular 21 CSS variables */
+      }
+
+      /* Optional: Make the paginator buttons look more like mat-flat-buttons */
+      .mat-mdc-paginator-navigation-next, 
+      .mat-mdc-paginator-navigation-previous {
+        background-color: #f8fafc; /* Tailwind gray-50 */
+        margin: 0 4px;
+        border-radius: 4px;
+      }
+    }
+  }
+}
