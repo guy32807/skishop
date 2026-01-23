@@ -1,0 +1,16 @@
+.flex.items-center {
+  display: flex;
+  align-items: center; /* Vertically centers both components */
+}
+
+.match-input-height {
+  /* Use the Material form field's internal height variable */
+  height: var(--mat-form-field-container-height, 56px) !important;
+  
+  /* Reset the button's internal MDC height variable to prevent 'growing' */
+  --mdc-filled-button-container-height: var(--mat-form-field-container-height, 56px);
+}
+
+.qty-field {
+  width: 100px; /* Adjust width as needed */
+}
