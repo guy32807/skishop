@@ -31,7 +31,38 @@ body {
   height: 100%;
 }
 
+.flex.items-center {
+  display: flex;
+  align-items: center; 
+}
 
+.match-input-height {
+  height: var(--mat-form-field-container-height, 56px) !important;
+  --mdc-filled-button-container-height: var(--mat-form-field-container-height, 56px);
+  --mdc-flat-button-container-height: var(--mat-form-field-container-height, 56px);
 
+    display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
+mat-form-field.grow {
+  /* This variable controls the box height without affecting labels */
+  --mat-form-field-container-height: 52px; 
+}
 
+@media (min-width: 768px) {
+  .flex-row.items-start {
+    align-items: center; 
+    padding-top: 8px; 
+  }
+}
+
+.snack-error {
+  background-color: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+.snack-success {
+  background-color: var(--mat-sys-success-container);
+  color: var(--mat-sys-on-success-container);
+}

@@ -1,6 +1,6 @@
 <div class="flex flex-col gap-6 p-4">
   <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-    <mat-form-field appearance="outline" class="grow">
+    <mat-form-field appearance="outline" class="grow" subscriptSizing="dynamic">
       <mat-label>Search products...</mat-label>
       <input
         matInput
@@ -15,7 +15,7 @@
       <button
         mat-flat-button
         color="primary"
-        class="custom-height-button"
+        class="match-input-height"
         [matMenuTriggerFor]="sortMenu"
       >
         <mat-icon>swap_vert</mat-icon>
@@ -43,7 +43,7 @@
         </button>
       </mat-menu>
 
-      <button mat-flat-button color="primary" class="h-13.5 px-6" (click)="openFiltersDialog()">
+      <button mat-flat-button color="primary" class="h-13.5 px-6 match-input-height" (click)="openFiltersDialog()">
         <mat-icon>filter_list</mat-icon>
         Filters
       </button>
