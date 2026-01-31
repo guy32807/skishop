@@ -1,10 +1,11 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { Product } from '../../../shared/models/product';
 import { MatCard, MatCardContent, MatCardActions } from '@angular/material/card';
 import { CurrencyPipe } from '@angular/common';
 import { MatAnchor } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 import { RouterLink } from '@angular/router';
+import { CartService } from '../../../core/services/cart.service';
 
 @Component({
   selector: 'app-product-item',
@@ -14,4 +15,5 @@ import { RouterLink } from '@angular/router';
 })
 export class ProductItemComponent {
   product = input.required<Product>();
+  cartService = inject(CartService);
 }

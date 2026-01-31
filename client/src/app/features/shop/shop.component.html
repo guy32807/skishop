@@ -53,7 +53,7 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
     @if (productsResource.isLoading()) {
       <div class="col-span-full flex flex-col items-center justify-center py-20 gap-4">
-        <mat-spinner diameter="50"></mat-spinner>
+        <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
         <p class="text-gray-500 animate-pulse">Refreshing products...</p>
       </div>
     } @else {

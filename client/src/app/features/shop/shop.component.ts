@@ -31,8 +31,7 @@ import { MatInputModule } from '@angular/material/input'; // Add this
     MatMenuModule,
     MatPaginatorModule,
     FormField,
-    MatInputModule,
-    MatIconButton
+    MatInputModule
 ],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.scss',

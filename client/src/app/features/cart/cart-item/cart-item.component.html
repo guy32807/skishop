@@ -1,0 +1,35 @@
+<div class="border border-gray-200 rounded-lg p-4 mb-4 shadow-sm bg-white">
+    <div class="flex items-center gap-6">
+        <!-- Product Image -->
+        <a routerLink="/shop/{{item().productId}}" class="shrink-0">
+            <img [src]="item().pictureUrl" alt="{{ item().productName }}" class="w-20 h-20 object-cover rounded-md" />
+        </a>
+
+        <!-- Product Details -->
+        <div class="flex-1">
+            <a routerLink="/shop/{{item().productId}}" class="font-medium block mb-2">
+                {{ item().productName }}
+            </a>
+            <button mat-button (click)="removeItem()" class="text-red-700!">
+                <mat-icon>delete</mat-icon>
+                Remove
+            </button>
+        </div>
+
+        <!-- Quantity Controls -->
+        <div class="flex items-center gap-3 border border-gray-300 rounded-md px-3 py-2">
+            <button mat-icon-button (click)="decrementQuantity()" class="text-red-700!">
+                <mat-icon class="text-red-700!">remove</mat-icon>
+            </button>
+            <span class="font-semibold text-lg w-8 text-center">{{ item().quantity }}</span>
+            <button mat-icon-button (click)="incrementQuantity()">
+                <mat-icon class="text-green-600!">add</mat-icon>
+            </button>
+        </div>
+
+        <!-- Price -->
+        <div class="text-right w-24">
+            <p class="font-bold text-xl">{{ item().price * item().quantity | currency }}</p>
+        </div>
+    </div>
+</div>

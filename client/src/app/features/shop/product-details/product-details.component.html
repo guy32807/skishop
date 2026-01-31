@@ -24,6 +24,8 @@
         </div>
         <div>
           <h1 class="text-2xl font-semibold text-gray-900">{{product?.name}}</h1>
+
+          <p>You have {{quantityInCart}} {{product?.name}} in your cart</p>
           <div class="mt-4 items-center gap-4 flex">
             <p class="text-3xl font-extrabold text-gray-900">
               {{product?.price | currency}}
@@ -31,14 +33,14 @@
           </div>
 
           <div class="flex gap-4 my-6">
-            <button mat-flat-button class="match-input-height">
+            <button [disabled]="quantity === quantityInCart" mat-flat-button (click)="updateCart()"  class="match-input-height">
               <mat-icon>add_shopping_cart</mat-icon>
-              Add to cart
+              {{getButtonText()}}
             </button>
 
             <mat-form-field appearance="outline" class="qty-field" subscriptSizing="dynamic">
               <mat-label>Quantity</mat-label>
-              <input matInput type="number">
+              <input matInput min="0" [(ngModel)]="quantity" type="number">
             </mat-form-field>
           </div>
           <mat-divider></mat-divider>
@@ -50,61 +52,3 @@
     </div>
   </section>
 }
-
-<!-- <div class="container mx-auto p-6">
-  @if (productResource.isLoading()) {
-    <div class="flex flex-col items-center justify-center py-20 gap-4">
-      <mat-spinner diameter="60"></mat-spinner>
-      <p class="text-gray-500 animate-pulse text-lg">Fetching product details...</p>
-    </div>
-  } @else if (productResource.error()) {
-    <div class="text-center py-20 bg-red-50 rounded-lg border border-red-100">
-      <mat-icon class="text-6xl text-red-400 mb-4">error_outline</mat-icon>
-      <h2 class="text-2xl font-bold text-red-800">Product Not Found</h2>
-      <p class="text-red-600 mb-6">The item you are looking for may have been removed or moved.</p>
-      <button mat-flat-button color="primary" routerLink="/shop">Return to Shop</button>
-    </div>
-  } @else {
-    @let product = productResource.value();
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-      <div class="rounded-xl overflow-hidden shadow-lg bg-white p-4">
-        <img
-          [src]="product?.pictureUrl"
-          [alt]="product?.name"
-          class="w-full h-auto object-contain"
-        />
-      </div>
-      <div class="flex flex-col gap-6">
-        <div>
-          <h1 class="text-4xl font-extrabold text-primary mb-2">{{ product?.name }}</h1>
-          <p class="text-2xl font-semibold text-gray-700">{{ product?.price | currency }}</p>
-        </div>
-
-        <mat-divider></mat-divider>
-
-        <div class="flex flex-col gap-2">
-          <p class="text-gray-600 leading-relaxed">{{ product?.description }}</p>
-          <div class="flex gap-4 mt-4">
-            <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
-              Brand: {{ product?.brand }}
-            </span>
-            <span class="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium">
-              Type: {{ product?.type }}
-            </span>
-          </div>
-        </div>
-
-        <div class="mt-auto flex gap-4">
-          <button mat-flat-button color="primary" class="h-14 grow text-lg">
-            <mat-icon>add_shopping_cart</mat-icon>
-            Add to Cart
-          </button>
-          <button mat-stroked-button color="primary" class="h-14 w-14" routerLink="/shop">
-            <mat-icon>arrow_back</mat-icon>
-          </button>
-        </div>
-      </div>
-    </div>
-  }
-</div> -->
