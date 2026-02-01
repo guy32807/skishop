@@ -1,4 +1,5 @@
 using API.Middleware;
+using Core.Entities;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Services;
@@ -32,11 +33,13 @@ builder.Services.AddSingleton<IConnectionMultiplexer
    return ConnectionMultiplexer.Connect(options);
 });    
 builder.Services.AddSingleton<ICartService, CartService>(); 
+builder.Services.AddAuthorization();
+builder.Services.AddIdentityApiEndpoints<AppUser>().AddEntityFrameworkStores<StoreContext>();
 
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors(x => x.AllowAnyHeader()
-.AllowAnyMethod()
+.AllowAnyMethod().AllowCredentials()
 .WithOrigins("http://localhost:4200", "https://localhost:4200"));
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -45,6 +48,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+app.MapGroup("api").MapIdentityApi<AppUser>();
+
 try
 {
     using var scope = app.Services.CreateScope();
