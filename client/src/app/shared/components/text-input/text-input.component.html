@@ -1,0 +1,21 @@
+<mat-form-field appearance="outline" class="w-full mb-4">
+  <mat-label>{{ label() }}</mat-label>
+  <input matInput [type]="type()" [formControl]="control" [placeholder]="label()" />
+  @if (control.errors?.['required']) {
+    <mat-error>{{ label() }} is required</mat-error>
+  }
+  @if (control.errors?.['email']) {
+    <mat-error>Invalid email address</mat-error>
+  }
+  @if (control.errors?.['minlength']) {
+    <mat-error
+      >{{ label() }} must be at least
+      {{ control.errors?.['minlength'].requiredLength }} characters</mat-error
+    >
+  }
+  @if (control.errors?.['pattern']) {
+    <mat-error>
+      Password requires 1 uppercase, 1 lowercase, 1 number, and 1 special character
+    </mat-error>
+  }
+</mat-form-field>

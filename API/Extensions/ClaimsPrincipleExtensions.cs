@@ -9,23 +9,31 @@ namespace API.Extensions;
 
 public static class ClaimsPrincipleExtensions
 {
-    public static async Task<AppUser> GetUserByEmailAsync(this  UserManager<AppUser> userManager, ClaimsPrincipal user)
+    public static async Task<AppUser> GetUserByEmailAsync(this UserManager<AppUser> userManager, ClaimsPrincipal user)
     {
+        var email = user.GetEmailFromClaims();
         var userToReturn = await userManager.Users
-            .SingleOrDefaultAsync(u => u.Email == user.GetEmailFromClaims()) ?? throw new AuthenticationException("User not found");
+            .SingleOrDefaultAsync(u => u.Email == email) ?? throw new AuthenticationException("User not found");
         return userToReturn;
     }
 
     public static async Task<AppUser> GetUserByEmailWithAddressesAsync(this UserManager<AppUser> userManager, ClaimsPrincipal user)
     {
+        var email = user.GetEmailFromClaims();
         var userToReturn = await userManager.Users
             .Include(u => u.Address)
-            .SingleOrDefaultAsync(u => u.Email == user.GetEmailFromClaims()) ?? throw new AuthenticationException("User not found");
-        return userToReturn;    
+            .SingleOrDefaultAsync(u => u.Email == email) ?? throw new AuthenticationException("User not found");
+        return userToReturn;
     }
 
     public static string GetEmailFromClaims(this ClaimsPrincipal user)
     {
-        var email = (user?.FindFirstValue(ClaimTypes.Email)) ?? throw new AuthenticationException("Email claim not found");
-        return email;}
+        var email = user.FindFirstValue(ClaimTypes.Email) 
+                ?? user.FindFirstValue(ClaimTypes.Name);
+
+    if (string.IsNullOrEmpty(email)) 
+        throw new AuthenticationException("Email claim not found");
+
+    return email;
+    }
 }

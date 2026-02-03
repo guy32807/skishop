@@ -1,0 +1,23 @@
+<mat-card class="max-w-lg mx-auto mt-32 p-8 bg-white">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">Login to Your Account</h2>
+      <app-text-input [formControlName]="'email'" [label]="'Email'"></app-text-input>
+    <app-text-input
+      [formControlName]="'password'"
+      [label]="'Password'"
+      type="password"
+    ></app-text-input>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      class="w-full py-4 text-lg font-semibold"
+      [disabled]="loginForm.invalid"
+    >
+      Login
+    </button>
+    <p class="text-center mt-6 text-gray-600">
+      Don't have an account? <a routerLink="/account/register" class="text-blue-600 font-medium hover:underline">Register here</a>
+    </p>
+  </form>
+</mat-card>

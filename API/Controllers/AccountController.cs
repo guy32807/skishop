@@ -44,7 +44,8 @@ public class AccountController(SignInManager<AppUser> signInManager) : BaseApiCo
         await signInManager.SignOutAsync();
         return NoContent();
     }
-
+    
+    [Authorize]
     [HttpGet("user-info")]
     public async Task<ActionResult> GetUserInfo()
     {

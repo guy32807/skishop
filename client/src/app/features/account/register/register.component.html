@@ -1,0 +1,16 @@
+<mat-card class="max-w-lg mx-auto mt-32 p-8 bg-white">
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-2">
+    <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">Create an account</h2>
+    <app-text-input [formControlName]="'firstName'" [label]="'First Name'"></app-text-input>
+    <app-text-input [formControlName]="'lastName'" [label]="'Last Name'"></app-text-input>
+    <app-text-input [formControlName]="'email'" [label]="'Email Address'"></app-text-input>
+    <app-text-input
+      [formControlName]="'password'"
+      [label]="'Password'"
+      type="password"
+    ></app-text-input>
+
+    <button mat-flat-button color="primary" type="submit" class="w-full py-6 mt-2" [disabled]="registerForm.invalid">Register</button>
+  </form>
+</mat-card>
+

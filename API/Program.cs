@@ -35,12 +35,22 @@ builder.Services.AddSingleton<IConnectionMultiplexer
 builder.Services.AddSingleton<ICartService, CartService>(); 
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<AppUser>().AddEntityFrameworkStores<StoreContext>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", policy=>
+    {
+        policy.AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()
+        .WithOrigins("https://localhost:4200");
+    });
+});
 
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors(x => x.AllowAnyHeader()
-.AllowAnyMethod().AllowCredentials()
-.WithOrigins("http://localhost:4200", "https://localhost:4200"));
+app.UseCors("CorsPolicy");
+app.UseAuthentication();
+app.UseAuthorization();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -48,7 +58,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-app.MapGroup("api").MapIdentityApi<AppUser>();
+app.MapGroup("api/account").MapIdentityApi<AppUser>();
 
 try
 {
