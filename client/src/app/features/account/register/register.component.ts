@@ -9,8 +9,6 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { Router, RouterLink } from '@angular/router';
 import { AccountService } from '../../../core/services/account.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
-import { JsonPipe } from '@angular/common';
-import { map } from 'rxjs';
 import { TextInputComponent } from '../../../shared/components/text-input/text-input.component';
 import { passwordValidators } from '../../../shared/utils/password-validators';
 
@@ -24,7 +22,6 @@ import { passwordValidators } from '../../../shared/utils/password-validators';
     MatCardModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    JsonPipe,
     TextInputComponent,
   ],
   templateUrl: './register.component.html',
