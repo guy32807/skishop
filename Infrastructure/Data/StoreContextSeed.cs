@@ -6,18 +6,36 @@ namespace Infrastructure.Data;
 
 public class StoreContextSeed
 {
+    private static readonly JsonSerializerOptions Options = new() 
+    { 
+        PropertyNameCaseInsensitive = true 
+    };
+
     public static async Task SeedAsync(StoreContext context)
     {
+        var path = Path.GetDirectoryName(typeof(StoreContextSeed).Assembly.Location);
+
         if (!context.Products.Any())
         {
-            var productsData = await File.ReadAllTextAsync("../Infrastructure/Data/SeeData/products.json");
+            await SeedEntityAsync<Product>(context, path + "/Data/SeedData/products.json");
+        }
 
-            var products = JsonSerializer.Deserialize<List<Product>>(productsData);
+        if (!context.DeliveryMethods.Any())
+        {
+            await SeedEntityAsync<DeliveryMethod>(context, path + "/Data/SeedData/delivery.json");
+        }
+    }
 
-            if(products == null) return;
+    private static async Task SeedEntityAsync<T>(StoreContext context, string filePath) where T : class
+    {
+        if (!File.Exists(filePath)) return;
 
-            context.Products.AddRange(products);
+        var data = await File.ReadAllTextAsync(filePath);
+        var items = JsonSerializer.Deserialize<List<T>>(data, Options);
 
+        if (items != null)
+        {
+            context.Set<T>().AddRange(items);
             await context.SaveChangesAsync();
         }
     }

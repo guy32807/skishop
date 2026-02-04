@@ -8,14 +8,20 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.2" />
     <PackageReference Include="StackExchange.Redis" Version="2.10.1" />
+    <PackageReference Include="Stripe.net" Version="50.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Config/" />
-    <Folder Include="Data/" />
-    <Folder Include="Data/SeeData/" />
+    <Folder Include="Data/SeedData/" />
     <Folder Include="Services/" />
   </ItemGroup>
+
+  <ItemGroup>
+  <None Update="Data\SeedData\*.json">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </None>
+</ItemGroup>
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>

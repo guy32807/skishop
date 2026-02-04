@@ -23,21 +23,22 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddSingleton<IConnectionMultiplexer
 >(c =>
 {
-   var connectionString = builder.Configuration
-   .GetConnectionString("Redis");
-   if(string.IsNullOrEmpty(connectionString))
-   {
-    throw new InvalidOperationException("Redis connection string is not configured.");
-   }
-   var options = ConfigurationOptions.Parse(connectionString, true);
-   return ConnectionMultiplexer.Connect(options);
-});    
-builder.Services.AddSingleton<ICartService, CartService>(); 
+    var connectionString = builder.Configuration
+    .GetConnectionString("Redis");
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException("Redis connection string is not configured.");
+    }
+    var options = ConfigurationOptions.Parse(connectionString, true);
+    return ConnectionMultiplexer.Connect(options);
+});
+builder.Services.AddSingleton<ICartService, CartService>();
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<AppUser>().AddEntityFrameworkStores<StoreContext>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("CorsPolicy", policy=>
+    options.AddPolicy("CorsPolicy", policy =>
     {
         policy.AllowAnyHeader()
         .AllowAnyMethod()
@@ -60,16 +61,19 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 app.MapGroup("api/account").MapIdentityApi<AppUser>();
 
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+var context = services.GetRequiredService<StoreContext>();
+var logger = services.GetRequiredService<ILogger<Program>>();
+
 try
 {
-    using var scope = app.Services.CreateScope();
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<StoreContext>();
     await context.Database.MigrateAsync();
     await StoreContextSeed.SeedAsync(context);
 }
 catch (System.Exception ex)
 {
+    logger.LogError(ex, "An error occurred during migration/seeding");
     Console.WriteLine(ex);
     throw;
 }

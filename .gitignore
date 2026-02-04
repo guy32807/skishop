@@ -38,7 +38,7 @@ bld/
 [Oo]bj/
 **/[Bb]in/*
 **/[Oo]bj/*
-
+appsettings.Development.json
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -632,3 +632,4 @@ API/obj/Debug/net10.0/BuildHost-net472/System.Numerics.Vectors.dll
 API/obj/Debug/net10.0/BuildHost-net472/System.Runtime.CompilerServices.Unsafe.dll
 API/obj/Debug/net10.0/BuildHost-net472/System.Threading.Tasks.Extensions.dll
 API/obj/Debug/net10.0/BuildHost-net472/cs/System.CommandLine.resources.dll
+API/appsettings.Development.json
