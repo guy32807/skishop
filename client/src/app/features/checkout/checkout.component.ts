@@ -12,7 +12,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { RouterLink } from '@angular/router';
 import { MatAnchor } from '@angular/material/button';
 import { StripeService } from '../../core/services/stripe.service';
-import { StripeAddressElement } from '@stripe/stripe-js';
+import { StripeAddressElement, StripePaymentElement } from '@stripe/stripe-js';
 import { SnackbarService } from '../../core/services/snackbar.service';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
@@ -42,6 +42,8 @@ export class CheckoutComponent {
   private accountService = inject(AccountService);
   addressElement?: StripeAddressElement;
   addressElementRef = viewChild.required<ElementRef>('addressElementContainer');
+  paymentElementRef = viewChild.required<ElementRef>('paymentElement');
+  paymentElement?: StripePaymentElement;
   saveAddress = false;
   savingAddress = signal(false);
   addressComplete = signal(false);
@@ -49,14 +51,19 @@ export class CheckoutComponent {
   constructor() {
     effect(async () => {
       const user = this.accountService.currentUser(); 
-      const container = this.addressElementRef().nativeElement;
-      if (!user || !container) return;
+      const addressContainer = this.addressElementRef().nativeElement;
+      const paymentContainer = this.paymentElementRef().nativeElement;
+      if (!user || !addressContainer || !paymentContainer) return;
 
       try {
         this.addressElement = await this.stripeService.createAddressElement();
-        if (container.innerHTML === '') {
-          this.addressElement.mount(container);
+        this.paymentElement = await this.stripeService.createPaymentElement();
+        if (addressContainer.innerHTML === '') {
+          this.addressElement.mount(addressContainer);
           this.addressElement.on('change', (event) => this.addressComplete.set(event.complete));
+        }
+        if(paymentContainer.innerHTML === ''){
+          this.paymentElement.mount(paymentContainer);
         }
       } catch (error: any) {
         this.snackBar.error(error.message);
