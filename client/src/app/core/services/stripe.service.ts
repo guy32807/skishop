@@ -1,5 +1,11 @@
 import { inject, Injectable } from '@angular/core';
-import { loadStripe, Stripe, StripeAddressElement, StripeAddressElementOptions, StripeElements } from '@stripe/stripe-js';
+import {
+  loadStripe,
+  Stripe,
+  StripeAddressElement,
+  StripeAddressElementOptions,
+  StripeElements,
+} from '@stripe/stripe-js';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { Cart } from '../../shared/models/cart';
@@ -30,34 +36,38 @@ export class StripeService {
       if (!stripe) throw new Error('Stripe has not been loaded');
 
       const cart = await firstValueFrom(this.createOrUpdatePaymentIntent());
-      
+
       this.elements = stripe.elements({
         clientSecret: cart.clientSecret,
         appearance: { labels: 'floating' },
       });
     }
-    return this.elements; 
+    return this.elements;
   }
 
   async createAddressElement() {
     if (!this.addressElement) {
       const elements = await this.initializeElements();
       const user = this.accountService.currentUser();
+      const fullName =
+        user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : '';
+        console.log("User from stripe service", user)
+      console.log('Is user null?', user, 'How about full name?', fullName);
 
       const options: StripeAddressElementOptions = {
         mode: 'shipping',
         defaultValues: {
-          name: user ? `${user.firstName} ${user.lastName}` : '',
+          name: fullName,
           address: {
             line1: user?.address?.line1 || '',
             city: user?.address?.city || '',
             state: user?.address?.state || '',
-            postal_code: user?.address?.zipCode || '',
+            postal_code: user?.address?.postalCode || '',
             country: user?.address?.country || 'US',
-          }
-        }
-      }
-       this.addressElement = elements.create('address', options);
+          },
+        },
+      };
+      this.addressElement = elements.create('address', options);
     }
     return this.addressElement;
   }
@@ -72,13 +82,13 @@ export class StripeService {
     const cart = this.cartService.cart();
     if (!cart) throw new Error('Problem with cart.');
 
-    return this.http.post<Cart>(this.baseUrl + 'payments/' + cart.id, {}).pipe(
-      tap((updatedCart) => this.cartService.cart.set(updatedCart))
-    );
+    return this.http
+      .post<Cart>(this.baseUrl + 'payments/' + cart.id, {})
+      .pipe(tap((updatedCart) => this.cartService.cart.set(updatedCart)));
   }
 
   disposeElements() {
-  this.elements = undefined;
-  this.addressElement = undefined;
-}
+    this.elements = undefined;
+    this.addressElement = undefined;
+  }
 }

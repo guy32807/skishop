@@ -5,6 +5,8 @@ namespace API.DTOs;
 
 public class AddressDto
 {
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
     [Required]
     public string Line1 { get; set; } = string.Empty;
     public string? Line2 { get; set; }

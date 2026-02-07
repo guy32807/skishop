@@ -82,9 +82,14 @@ public class AccountController(SignInManager<AppUser> signInManager) : BaseApiCo
 
     [Authorize]
     [HttpPost("address")]
-    public async Task<ActionResult<Address>> CreateOrUpdateAddress(AddressDto addressDto)
+    public async Task<ActionResult<AddressDto>> CreateOrUpdateAddress(AddressDto addressDto)
     {
         var user = await signInManager.UserManager.GetUserByEmailWithAddressesAsync(User);
+
+        if(user == null) return Unauthorized();
+
+        user.FirstName = addressDto.FirstName;
+        user.LastName = addressDto.LastName;
 
         if (user.Address == null)
         {

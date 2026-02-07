@@ -9,4 +9,7 @@ public class ShoppingCart
     public int? DeliveryMethodId { get; set; }
     public string? ClientSecret { get; set; }
     public string? PaymentIntentId { get; set; }
+    public Address? ShippingAddress { get; set; }
+    public long? Tax { get; set; } 
+    public long? Total { get; set; } 
 }

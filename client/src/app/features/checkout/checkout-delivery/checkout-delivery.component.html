@@ -1,0 +1,31 @@
+<div class="mt-4">
+  @if (deliveryMethods().length > 0) {
+    <mat-radio-group
+      [value]="cartService.selectedDelivery()?.id"
+      (change)="updateDeliveryMethod($event.value)"
+      class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      @for (method of checkoutService.deliveryMethods; track method.id) {
+        <label
+          class="flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50"
+          [class.border-green-600]="cartService.cart()?.deliveryMethodId === method.id"
+          [class.bg-green-50]="cartService.cart()?.deliveryMethodId === method.id"
+        >
+          <div class="flex items-center gap-3">
+            <mat-radio-button
+              [value]="method"
+              [checked]="cartService.selectedDelivery() === method"
+              color="primary"
+            ></mat-radio-button>
+            <div class="flex flex-col">
+              <span class="font-bold text-gray-800">{{ method.shortName }}</span>
+              <span class="text-sm text-gray-500">{{ method.description }}</span>
+            </div>
+          </div>
+
+          <span class="font-semibold text-lg">{{ method.price | currency }}</span>
+        </label>
+      }
+    </mat-radio-group>
+  }
+</div>

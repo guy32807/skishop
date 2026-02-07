@@ -24,4 +24,6 @@ export class Cart implements CartType {
     deliveryMethodId?: number;
     paymentIntentId?: string;
     clientSecret?: string;
+    tax?: number;
+    total?: number;
 }

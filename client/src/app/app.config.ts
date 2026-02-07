@@ -12,7 +12,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { errorInterceptor } from './core/interceptors/error-interceptor';
 import { loadingInterceptor } from './core/interceptors/loading-interceptor';
 import { InitService } from './core/services/init.service';
-import { catchError, forkJoin, lastValueFrom, of } from 'rxjs';
+import { catchError, forkJoin, lastValueFrom, of, take } from 'rxjs';
 import { authInterceptor } from './core/interceptors/auth-interceptor';
 import { AccountService } from './core/services/account.service';
 
@@ -28,7 +28,7 @@ export const appConfig: ApplicationConfig = {
       return await lastValueFrom(
         forkJoin({
           init: initService.init(),
-          user: accountService.getUserInfo().pipe(catchError(() => of(null))),
+          user: accountService.getUserInfo().pipe(take(1), catchError(() => of(null)))
         }),
       ).finally(() => {
         const splash = document.getElementById('initial-splash');

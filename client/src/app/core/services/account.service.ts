@@ -40,14 +40,27 @@ export class AccountService {
     );
   }
 
-  updateUserAddress(address: Address) {
-    return this.http.post(this.baseUrl + 'account/address', address);
-  }
+updateUserAddress(address: Address) {
+  return this.http.post<Address>(this.baseUrl + 'account/address', address).pipe(
+    tap(updatedAddress => { // Use the response from the server if possible
+      this.currentUser.update(user => {
+        if (!user) return null;
+        // Return a NEW object reference to guarantee Zoneless picks up the change
+        return {
+          ...user,
+          firstName: updatedAddress.firstName ?? user.firstName,
+          lastName: updatedAddress.lastName ?? user.lastName,
+          address: updatedAddress || address 
+        };
+      });
+    })
+  );
+}
 
   initUser() {
     return () =>
       this.getUserInfo().pipe(
-        catchError(() => of(null)), // Prevent app crash if not authenticated
+        catchError(() => of(null)), 
       );
   }
 }

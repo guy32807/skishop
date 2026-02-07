@@ -6,10 +6,12 @@ export type User = {
 };
 
 export type Address = {
+  firstName?: string;
+  lastName?: string;
   line1: string;
   line2?: string;
   city: string;
   state: string;
-  zipCode: string;
+  postalCode: string;
   country: string;
 };
