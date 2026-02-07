@@ -8,29 +8,26 @@
         <div class="flex items-center justify-between gap-4">
           <span class="text-gray-700">Subtotal</span>
           <span class="font-medium text-gray-900">{{
-            cartService.totals().subtotal | currency
+            cartService.totals()?.subtotal | currency
           }}</span>
         </div>
         <div class="flex items-center justify-between gap-4">
           <span class="text-gray-700">Shipping</span>
           <span class="font-medium text-gray-900">{{
-            cartService.totals().shipping | currency
+            cartService.totals()?.shipping | currency
           }}</span>
         </div>
-        <div class="flex items-center justify-between gap-4">
-          <span class="text-gray-700">Tax</span>
-          <span class="font-medium text-gray-900">{{ cartService.totals().tax | currency }}</span>
-        </div>
+        
         <div class="flex items-center justify-between gap-4">
           <span class="text-gray-700">Discount</span>
           <span class="font-medium text-green-600"
-            >-{{ cartService.totals().discountAmount | currency }}</span
+            >-{{ cartService.totals()?.discountAmount | currency }}</span
           >
         </div>
         <div class="flex items-center justify-between gap-4 border-t border-gray-200 pt-4">
           <span class="text-lg font-semibold text-gray-900">Total</span>
           <span class="text-lg font-bold text-gray-900">{{
-            cartService.totals().total | currency
+            cartService.totals()?.total | currency
           }}</span>
         </div>
       </div>

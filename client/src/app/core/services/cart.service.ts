@@ -33,18 +33,11 @@ export class CartService {
 
     const shipping = delivery ? delivery.price : 0;
     const discountAmount = this.discount();
-    const tax = (subtotal + shipping - discountAmount) * 0.08; // 8% tax
-    const total = subtotal + shipping + tax - discountAmount;
-    return { 
-      subtotal: cart.items.reduce((s, i) => s + (i.price * i.quantity), 0),
-    shipping: this.selectedDelivery()?.price ?? 0,
-    tax: (cart.tax ?? 0) / 100, 
-    total: (cart.total ?? 0) / 100
-     };
+    const total = subtotal + shipping - discountAmount;
+    return { subtotal, shipping, discountAmount, total };
   });
 
   applyDiscount(discountCode: string) {
-    // Replace with actual API call
     if (discountCode === 'SAVE10') {
       this.discount.set(10);
     } else if (discountCode === 'SAVE20') {
@@ -153,7 +146,7 @@ export class CartService {
     return {
       productId: product.id,
       productName: product.name,
-      quantity: 0, // This stays 0, addOrUpdateItem handles the actual quantity
+      quantity: 0, 
       price: product.price,
       pictureUrl: product.pictureUrl,
       brand: product.brand,

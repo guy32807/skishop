@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, output } from '@angular/core';
 import { CheckoutService } from '../../../core/services/checkout.service';
 import { MatRadioModule } from '@angular/material/radio';
 import { CurrencyPipe } from '@angular/common';
@@ -15,12 +15,27 @@ import { DeliveryMethod } from '../../../shared/models/deliveryMethod';
   templateUrl: './checkout-delivery.component.html',
   styleUrl: './checkout-delivery.component.scss',
 })
-export class CheckoutDeliveryComponent {
+export class CheckoutDeliveryComponent implements OnInit {
+  deliveryComplete = output<boolean>();
   checkoutService = inject(CheckoutService);
   private stripeService = inject(StripeService);
   cartService = inject(CartService);
 
   deliveryMethods = toSignal(this.checkoutService.getDeliveryMethods(), { initialValue: [] });
+
+    ngOnInit() {
+        this.checkoutService.getDeliveryMethods().subscribe({
+      next: methods => {
+        if (this.cartService.cart()?.deliveryMethodId) {
+          const method = methods.find(d => d.id === this.cartService.cart()?.deliveryMethodId);
+          if (method) {
+            this.cartService.selectedDelivery.set(method);
+            this.deliveryComplete.emit(true);
+          }
+        }
+      }
+    })
+  }
 
   async updateDeliveryMethod(method: DeliveryMethod) {
     this.cartService.selectedDelivery.set(method);
@@ -29,12 +44,5 @@ export class CheckoutDeliveryComponent {
       cart.deliveryMethodId = method.id;
       this.cartService.setCart(cart);
      }
-
-    // this.cartService.cart.set({
-    //   ...cart,
-    //   deliveryMethodId: method.id,
-    // });
-
-    // await firstValueFrom(this.stripeService.createOrUpdatePaymentIntent());
   }
 }

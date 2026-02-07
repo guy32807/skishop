@@ -21,6 +21,9 @@ import { firstValueFrom } from 'rxjs';
 import { AccountService } from '../../core/services/account.service';
 import { CheckoutDeliveryComponent } from './checkout-delivery/checkout-delivery.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { CheckoutReviewComponent } from "./checkout-review/checkout-review.component";
+import { CartService } from '../../core/services/cart.service';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-checkout',
@@ -31,7 +34,8 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     MatAnchor,
     MatCheckboxModule,
     CheckoutDeliveryComponent,
-  ],
+    CheckoutReviewComponent, CurrencyPipe
+],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss',
 })
@@ -40,6 +44,7 @@ export class CheckoutComponent {
   private snackBar = inject(SnackbarService);
   private destroyRef = inject(DestroyRef);
   private accountService = inject(AccountService);
+  cartService = inject(CartService);
   addressElement?: StripeAddressElement;
   addressElementRef = viewChild.required<ElementRef>('addressElementContainer');
   paymentElementRef = viewChild.required<ElementRef>('paymentElement');
