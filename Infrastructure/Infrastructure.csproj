@@ -5,6 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.2" />
     <PackageReference Include="StackExchange.Redis" Version="2.10.1" />
@@ -14,6 +15,7 @@
   <ItemGroup>
     <Folder Include="Config/" />
     <Folder Include="Data/SeedData/" />
+    <Folder Include="Migrations/" />
     <Folder Include="Services/" />
   </ItemGroup>
 

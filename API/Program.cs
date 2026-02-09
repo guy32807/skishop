@@ -37,6 +37,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer
 });
 builder.Services.AddSingleton<ICartService, CartService>();
 builder.Services.AddAuthorization();
+builder.Services.AddScoped<IAIService, AIService>();
 builder.Services.AddIdentityApiEndpoints<AppUser>().AddEntityFrameworkStores<StoreContext>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddCors(options =>

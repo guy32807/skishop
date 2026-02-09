@@ -14,6 +14,6 @@ public class AddressDto
     public string City { get; set; } = string.Empty;
     [Required]
     public string State { get; set; } = string.Empty;
-    public string ZipCode { get; set; } = string.Empty;
+    public string PostalCode { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
 }

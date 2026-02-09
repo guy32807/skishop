@@ -43,6 +43,7 @@ export class CheckoutDeliveryComponent implements OnInit {
      if (cart){
       cart.deliveryMethodId = method.id;
       this.cartService.setCart(cart);
+      this.deliveryComplete.emit(true);
      }
   }
 }

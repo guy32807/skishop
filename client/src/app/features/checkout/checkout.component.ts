@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   DestroyRef,
   effect,
   ElementRef,
@@ -8,11 +9,16 @@ import {
   viewChild,
 } from '@angular/core';
 import { OrderSummaryComponent } from '../../shared/components/order-summary/order-summary.component';
-import { MatStepperModule } from '@angular/material/stepper';
-import { RouterLink } from '@angular/router';
+import { MatStepper, MatStepperModule } from '@angular/material/stepper';
+import { Router, RouterLink } from '@angular/router';
 import { MatAnchor } from '@angular/material/button';
 import { StripeService } from '../../core/services/stripe.service';
-import { StripeAddressElement, StripePaymentElement } from '@stripe/stripe-js';
+import {
+  ConfirmationToken,
+  StripeAddressElement,
+  StripeAddressElementChangeEvent,
+  StripePaymentElement,
+} from '@stripe/stripe-js';
 import { SnackbarService } from '../../core/services/snackbar.service';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
@@ -20,10 +26,10 @@ import { Address } from '../../shared/models/user';
 import { firstValueFrom } from 'rxjs';
 import { AccountService } from '../../core/services/account.service';
 import { CheckoutDeliveryComponent } from './checkout-delivery/checkout-delivery.component';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { CheckoutReviewComponent } from "./checkout-review/checkout-review.component";
+import { CheckoutReviewComponent } from './checkout-review/checkout-review.component';
 import { CartService } from '../../core/services/cart.service';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, JsonPipe } from '@angular/common';
+import { MatProgressSpinnerModule} from '@angular/material/progress-spinner'
 
 @Component({
   selector: 'app-checkout',
@@ -34,8 +40,10 @@ import { CurrencyPipe } from '@angular/common';
     MatAnchor,
     MatCheckboxModule,
     CheckoutDeliveryComponent,
-    CheckoutReviewComponent, CurrencyPipe
-],
+    CheckoutReviewComponent,
+    CurrencyPipe,
+    MatProgressSpinnerModule
+  ],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss',
 })
@@ -44,18 +52,30 @@ export class CheckoutComponent {
   private snackBar = inject(SnackbarService);
   private destroyRef = inject(DestroyRef);
   private accountService = inject(AccountService);
+  private router = inject(Router);
+  loading = false;
   cartService = inject(CartService);
   addressElement?: StripeAddressElement;
+  paymentElement?: StripePaymentElement;
   addressElementRef = viewChild.required<ElementRef>('addressElementContainer');
   paymentElementRef = viewChild.required<ElementRef>('paymentElement');
-  paymentElement?: StripePaymentElement;
   saveAddress = false;
-  savingAddress = signal(false);
   addressComplete = signal(false);
+  paymentComplete = signal(false);
+  deliveryComplete = computed(() => {
+    const cart = this.cartService.cart();
+    return !!(cart && cart.deliveryMethodId);
+  });
+  completionStatus = signal<{ address: boolean; card: boolean; delivery: boolean }>({
+    address: false,
+    card: false,
+    delivery: false,
+  });
+  confirmationToken?: ConfirmationToken;
 
   constructor() {
     effect(async () => {
-      const user = this.accountService.currentUser(); 
+      const user = this.accountService.currentUser();
       const addressContainer = this.addressElementRef().nativeElement;
       const paymentContainer = this.paymentElementRef().nativeElement;
       if (!user || !addressContainer || !paymentContainer) return;
@@ -65,10 +85,23 @@ export class CheckoutComponent {
         this.paymentElement = await this.stripeService.createPaymentElement();
         if (addressContainer.innerHTML === '') {
           this.addressElement.mount(addressContainer);
-          this.addressElement.on('change', (event) => this.addressComplete.set(event.complete));
+          this.addressElement.on('change', (event) => {
+            this.addressComplete.set(event.complete);
+            return this.completionStatus.update((state) => ({
+              ...state,
+              address: event.complete,
+            }));
+          });
         }
-        if(paymentContainer.innerHTML === ''){
+        if (paymentContainer.innerHTML === '') {
           this.paymentElement.mount(paymentContainer);
+          this.paymentElement.on('change', (event) => {
+            this.paymentComplete.set(event.complete);
+            return this.completionStatus.update((state) => ({
+              ...state,
+              card: event.complete,
+            }));
+          });
         }
       } catch (error: any) {
         this.snackBar.error(error.message);
@@ -79,6 +112,28 @@ export class CheckoutComponent {
     });
   }
 
+  handleDelivery(event: boolean) {
+    this.completionStatus.update((state) => {
+      state.delivery = event;
+      return state;
+    });
+  }
+
+  async getConfirmationToken() {
+    try {
+      if (Object.values(this.completionStatus()).every((status) => status === true)) {
+        const result = await this.stripeService.createConfirmationToken();
+        if (result.error) {
+          throw new Error(result.error.message);
+        }
+        this.confirmationToken = result.confirmationToken;
+        console.log(this.confirmationToken);
+      }
+    } catch (error: any) {
+      this.snackBar.error(error.message);
+    }
+  }
+
   async onStepChange(event: StepperSelectionEvent) {
     if (event.selectedIndex === 1) {
       if (this.saveAddress) {
@@ -86,24 +141,32 @@ export class CheckoutComponent {
         address && firstValueFrom(this.accountService.updateUserAddress(address));
       }
     }
-    if(event.selectedIndex === 2){
-      await firstValueFrom(this.stripeService.createOrUpdatePaymentIntent())
+    if (event.selectedIndex === 2) {
+      await firstValueFrom(this.stripeService.createOrUpdatePaymentIntent());
+    }
+    if(event.selectedIndex === 3){
+      await this.getConfirmationToken();
     }
   }
 
-  async onSaveAddress() {
-    const address = await this.getAddressFromStripe();
-    if (!address) return;
-
-    this.savingAddress.set(true);
-
+  async confirmPayment(stepper: MatStepper){
+    this.loading = true;
     try {
-      await firstValueFrom(this.accountService.updateUserAddress(address));
-      this.snackBar.success('Address saved to profile');
-    } catch (error) {
-      this.snackBar.error('Failed to save address');
-    } finally {
-      this.savingAddress.set(false);
+      if(this.confirmationToken){
+        const result = await this.stripeService.confirmPayment(this.confirmationToken);
+        if(result.error){
+          throw new Error(result.error.message)
+        }else{
+          this.cartService.clearCart();
+          this.cartService.selectedDelivery.set(null);
+          this.router.navigateByUrl('/checkout/success');
+        }
+      }
+    } catch (error: any) {
+      this.snackBar.error(error.message || "something went wrong");
+      stepper.previous();
+    } finally{
+      this.loading = false;
     }
   }
 
