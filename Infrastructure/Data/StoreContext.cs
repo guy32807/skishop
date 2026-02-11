@@ -1,6 +1,7 @@
 using System;
 using Core.Entities;
 using Core.Entities.AI;
+using Core.Entities.OrderAggregate;
 using Infrastructure.Config;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,8 @@ public class StoreContext(DbContextOptions options) : IdentityDbContext<AppUser>
     public DbSet<AIChatMessage> AIChatMessages { get; set; }
     public DbSet<AIUserPreference> AIUserPreferences { get; set; }
     public DbSet<ProductAIMetadata> ProductAiMetadata { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderItem> OrderItems { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -25,5 +28,7 @@ public class StoreContext(DbContextOptions options) : IdentityDbContext<AppUser>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProductAIMetadataConfiguration).Assembly);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AIChatSessionConfiguration).Assembly);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AIChatMessageConfiguration).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderConfiguration).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderItemConfiguration).Assembly);
     }
 }

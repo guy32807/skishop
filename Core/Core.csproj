@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Entities/OrderAggregate/" />
     <Folder Include="Interfaces/" />
   </ItemGroup>
 
