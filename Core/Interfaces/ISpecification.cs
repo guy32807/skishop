@@ -16,6 +16,8 @@ public interface ISpecification<T>
     int Skip{get; }
     bool IsPagingEnabled {get;}
     IQueryable<T> ApplyCriteria(IQueryable<T> query);
+    List<Expression<Func<T, object>>> Includes{get; }
+    List<string> IncludeStrings {get;}
 }
 
 public interface ISpecification<T, TResult> : ISpecification<T>
