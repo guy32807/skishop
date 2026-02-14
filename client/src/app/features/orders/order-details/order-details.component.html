@@ -1,0 +1,153 @@
+<div class="mx-auto mt-32 max-w-4xl px-4">
+  @if (orderResource.isLoading()) {
+    <div class="flex flex-col items-center justify-center py-20">
+      <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+      <p class="mt-4 text-green-600 font-medium">Loading order details...</p>
+    </div>
+  } @else if (orderResource.value(); as order) {
+    <!-- 1. Header Section -->
+    <div class="flex justify-between items-end border-b pb-4 mb-6">
+      <div>
+        <h2 class="font-semibold text-2xl text-center text-green-800">
+          Order Summary for Order #{{ order.id }}
+        </h2>
+        <p class="text-gray-500">Placed on {{ order.orderDate | date: 'longDate' }}</p>
+      </div>
+      <div class="text-right">
+        <span
+          class="px-4 py-1 rounded-full text-sm font-semibold"
+          [class]="
+            order.status === 'PaymentReceived'
+              ? 'bg-green-100 text-green-700'
+              : 'bg-blue-100 text-blue-700'
+          "
+        >
+          {{ order.status }}
+        </span>
+      </div>
+    </div>
+
+    <!-- 2. Info Grid: Address, Email, Payment -->
+    <div
+      class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10 bg-gray-50 p-6 rounded-xl border border-gray-100"
+    >
+      <!-- Shipping Address -->
+      <div>
+        <h4 class="text-xs uppercase tracking-wider text-gray-400 font-bold mb-3">
+          Shipping Address
+        </h4>
+        <dl class="text-sm text-gray-700 leading-relaxed">
+          <dt class="sr-only">Recipient Name</dt>
+          <dd class="font-semibold">{{ order.shippingAddress.name }}</dd>
+
+          <dt class="sr-only">Street Address</dt>
+          <dd>{{ order.shippingAddress.line1 }}</dd>
+
+          <dt class="sr-only">Location</dt>
+          <dd>
+            {{ order.shippingAddress.city }}, {{ order.shippingAddress.state }}
+            {{ order.shippingAddress.postalCode }}
+          </dd>
+
+          <dt class="sr-only">Country</dt>
+          <dd>{{ order.shippingAddress.country }}</dd>
+        </dl>
+      </div>
+
+      <!-- Contact Info -->
+      <div>
+        <h4 class="text-xs uppercase tracking-wider text-gray-400 font-bold mb-3">Contact</h4>
+        <dl class="text-sm">
+          <dt class="text-gray-500 italic">Email Address</dt>
+          <dd class="text-gray-700">{{ order.buyerEmail }}</dd>
+        </dl>
+      </div>
+
+      <!-- Payment Info -->
+      <div>
+        <h4 class="text-xs uppercase tracking-wider text-gray-400 font-bold mb-3">Payment Info</h4>
+        <dl class="text-sm">
+          <dt class="text-gray-500 italic">Method</dt>
+          <dd class="text-gray-700">{{ order.paymentSummary | payment }}</dd>
+
+          <dt class="text-gray-500 italic mt-2">Transaction ID</dt>
+          <dd class="text-gray-400 font-mono text-xs break-all">{{ order.paymentIntentId }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- 3. Items Table -->
+    <div class="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th class="px-6 py-3">Product</th>
+            <th class="px-6 py-3 text-center">Price</th>
+            <th class="px-6 py-3 text-center">Quantity</th>
+            <th class="px-6 py-3 text-right">Total</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          @for (item of order.orderItems; track item.productId) {
+            <tr>
+              <td class="px-6 py-4">
+                <div class="flex items-center">
+                  <img
+                    [src]="item.pictureUrl"
+                    [alt]="item.productName"
+                    class="h-12 w-12 object-cover rounded shadow-sm mr-4"
+                  />
+                  <span class="font-medium text-gray-900">{{ item.productName }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-center text-gray-600">{{ item.price | currency }}</td>
+              <td class="px-6 py-4 text-center text-gray-600">{{ item.quantity }}</td>
+              <td class="px-6 py-4 text-right font-semibold text-gray-900">
+                {{ item.price * item.quantity | currency }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- 4. Summary Footer -->
+      <div class="bg-gray-50 px-6 py-6 border-t border-gray-200">
+        <div class="flex justify-end">
+          <dl class="grid grid-cols-[1fr_auto] gap-x-12 gap-y-2 text-right min-w-62.5">
+            <dt class="text-gray-500">Subtotal</dt>
+            <dd class="font-medium text-gray-900">{{ order.subtotal | currency }}</dd>
+
+            <dt class="text-gray-500">Shipping</dt>
+            <dd class="font-medium text-gray-900">{{ order.shippingPrice | currency }}</dd>
+
+            <dt class="text-xl font-bold text-green-700 pt-2 border-t border-gray-200">Total</dt>
+            <dd class="text-xl font-bold text-green-700 pt-2 border-t border-gray-200">
+              {{ order.total | currency }}
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="mt-8 pb-10">
+      <button
+        routerLink="/orders"
+        class="text-green-600 hover:text-green-800 font-medium flex items-center gap-2 transition-colors"
+      >
+        ← Back to My Orders
+      </button>
+    </div>
+  } @else if (orderResource.error()) {
+    <div class="bg-red-50 border border-red-200 text-red-700 px-6 py-8 rounded-xl text-center">
+      <p class="font-bold text-lg">Order Not Found</p>
+      <p class="text-sm mt-1 text-red-600/80">We couldn't retrieve the details for this order.</p>
+      <button
+        (click)="orderResource.reload()"
+        class="mt-6 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+      >
+        Try Again
+      </button>
+    </div>
+  }
+</div>

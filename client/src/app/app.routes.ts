@@ -12,6 +12,8 @@ import { RegisterComponent } from './features/account/register/register.componen
 import { authGuard } from './core/guards/auth-guard';
 import { emptyCartGuard } from './core/guards/empty-cart-guard';
 import { CheckoutSuccessComponent } from './features/checkout/checkout-success/checkout-success.component';
+import { OrderComponent } from './features/orders/order.component';
+import { OrderDetailsComponent } from './features/orders/order-details/order-details.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -25,5 +27,7 @@ export const routes: Routes = [
   { path: 'test-error', component: TestErrorComponent },
   { path: 'not-found', component: NotFoundComponent },
   { path: 'server-error', component: ServerErrorComponent },
+  { path: 'orders', component: OrderComponent, canActivate: [authGuard]},
+  { path: 'orders/:id', component: OrderDetailsComponent, canActivate: [authGuard]},
   { path: '**', redirectTo: 'not-found', pathMatch: 'full' },
 ];
